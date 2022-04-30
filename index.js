@@ -41,6 +41,9 @@ async function run() {
         //post api
         //http://localhost:4000/item
 
+        //put api
+        //http://localhost:4000/item/626cfcfe3751a119d5c7673a
+
         //create post
         app.post('/item', async (req, res) => {
             const data = req.body
@@ -70,6 +73,14 @@ async function run() {
             const result = await itemCollection.updateOne(filter, updateDoc, options);
             res.send(result)
 
+        })
+
+        app.delete('/item/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+
+            const result = itemCollection.deleteOne(filter)
+            res.send(result)
         })
 
     } finally {

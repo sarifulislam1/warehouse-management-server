@@ -6,18 +6,19 @@ const app = express()
 const port = process.env.PORT || 4000
 const cors = require("cors")
 
+require('dotenv').config()
 app.use(express.json());
 app.use(cors());
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const uri = "mongodb+srv://sariful:EKLGR6ar55WFnzUB@cluster0.pni7z.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pni7z.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 // client.connect(err => {
 //     const collection = client.db("test").collection("devices");
 //     // perform actions on the collection object
 //     // client.close();
-//     console.log('connected to db');
+//     console.log('connected to db'); upadet this
 // });
 
 async function run() {

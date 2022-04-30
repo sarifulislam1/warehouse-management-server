@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors());
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://sariful:EKLGR6ar55WFnzUB@cluster0.pni7z.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 // client.connect(err => {
@@ -48,6 +48,28 @@ async function run() {
             const result = await itemCollection.insertOne(data)
 
             res.send(result)
+        });
+
+        app.put('/item/:id', async (req, res) => {
+            const id = req.params.id
+            const data = req.body
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+
+            const updateDoc = {
+                $set: {
+                    name: data.name,
+                    price: data.price,
+                    img: data.img,
+                    description: data.description,
+                    quantity: data.quantity,
+                    supplierName: data.supplierName,
+
+                },
+            };
+            const result = await itemCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+
         })
 
     } finally {

@@ -53,26 +53,20 @@ async function run() {
 
             res.send(result)
         });
-
+        console.log('all api working');
         app.put('/item/:id', async (req, res) => {
-            const id = req.params.id
-            const data = req.body
-            const filter = { _id: ObjectId(id) }
+            const id = req.params.id;
+            const data = req.body;
+            const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
-
-            const updateDoc = {
+            const updatedDoc = {
                 $set: {
-                    // name: data.name,
-                    // price: data.price,
-                    // img: data.img,
-                    // description: data.description,
-                    quantity: data.quantity,
-                    // supplierName: data.supplierName,
+                    quantity: data.quantity
 
-                },
+                }
             };
-            const result = await itemCollection.updateOne(filter, updateDoc, options);
-            res.send(result)
+            const result = await itemCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
 
         })
 

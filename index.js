@@ -45,7 +45,7 @@ async function run() {
         //put api
         //http://localhost:4000/item/626cfcfe3751a119d5c7673a
 
-        //create post
+
         app.post('/item', async (req, res) => {
             const data = req.body
             console.log(data);

@@ -36,7 +36,7 @@ async function run() {
 
 
         })
-        //all items
+
         // http://localhost:4000/items
 
         //post api

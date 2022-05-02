@@ -62,12 +62,12 @@ async function run() {
 
             const updateDoc = {
                 $set: {
-                    name: data.name,
-                    price: data.price,
-                    img: data.img,
-                    description: data.description,
+                    // name: data.name,
+                    // price: data.price,
+                    // img: data.img,
+                    // description: data.description,
                     quantity: data.quantity,
-                    supplierName: data.supplierName,
+                    // supplierName: data.supplierName,
 
                 },
             };

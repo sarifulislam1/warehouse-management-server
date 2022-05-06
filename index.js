@@ -5,6 +5,7 @@ const express = require("express")
 const app = express()
 const port = process.env.PORT || 4000
 const cors = require("cors")
+const jwt = require('jsonwebtoken');
 
 require('dotenv').config()
 app.use(express.json());
@@ -14,12 +15,7 @@ app.use(cors());
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pni7z.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-// client.connect(err => {
-//     const collection = client.db("test").collection("devices");
-//     // perform actions on the collection object
-//     // client.close();
-//     console.log('connected to db'); upadet this
-// });
+
 
 async function run() {
     try {
@@ -33,26 +29,54 @@ async function run() {
 
             res.send(result)
 
-
-
         })
 
-        // http://localhost:4000/items
+        app.post('/login', async (req, res) => {
+            const email = req.body
 
-        //post api
-        //http://localhost:4000/item
+            const accessToken = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET, {
 
-        //put api
-        //http://localhost:4000/item/626cfcfe3751a119d5c7673a
+            })
+
+            res.send({ accessToken })
+        })
 
 
         app.post('/item', async (req, res) => {
             const data = req.body
-            console.log(data);
-            const result = await itemCollection.insertOne(data)
+            const tokenInfo = req.headers.authorization
+            console.log(tokenInfo);
+            const [email, accessToken] = tokenInfo.split(" ")
+            const decoded = verifyToken(accessToken)
+            console.log(decoded);
+            //jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+            console.log(decoded);
+            if (email === decoded.email) {
+                const result = await itemCollection.insertOne(data)
 
-            res.send(result)
+                res.send(result)
+            }
+            else {
+                req.send({ success: 'UnAuthorized Access' })
+            }
         });
+        //   require('crypto').randomBytes(256).toString('base64')
+        app.get('/myItem', async (req, res) => {
+            const tokenInfo = req.headers.authorization
+            const [email, accessToken] = tokenInfo.split(" ")
+            const decoded = verifyToken(accessToken)
+            if (email === decoded.email) {
+
+                const myItem = await itemCollection.find({ email: email }).toArray();
+                res.send(myItem);
+            }
+            else {
+                res.send({ success: 'UnAuthorized Access' })
+            }
+
+
+        })
+
         console.log('all api working');
         app.put('/item/:id', async (req, res) => {
             const id = req.params.id;
@@ -100,3 +124,17 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
+
+function verifyToken(token) {
+    let email;
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+        if (err) {
+            email = 'Invalid'
+        }
+        console.log(decoded);
+        if (decoded) {
+            email = decoded
+        }
+    })
+    return email
+}
